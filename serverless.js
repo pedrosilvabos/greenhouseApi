@@ -1,35 +1,49 @@
-const express = require('express');
-const app = express();
-const port = 3000;
+// functions/root.js
 
-app.use(express.json());
-
-// Logging middleware
-app.use((req, res, next) => {
-  // Get client IP address
+exports.handler = async (event, context) => {
   const clientIp =
-    req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-  // Get user-agent
-  const userAgent = req.headers['user-agent'];
+    event.headers['x-forwarded-for'] || event.requestContext.identity.sourceIp;
+  const userAgent = event.headers['user-agent'];
 
   console.log(
-    `Request Method: ${req.method}, Request URL: ${req.url}, Client IP: ${clientIp}, User-Agent: ${userAgent}`
+    `Request Method: ${event.httpMethod}, Request URL: ${event.path}, Client IP: ${clientIp}, User-Agent: ${userAgent}`
   );
 
-  next(); // Pass control to the next handler
-});
-// Simple route to test the server
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
+  return {
+    statusCode: 200,
+    body: 'Hello World',
+  };
+};
 
-app.get('/test', (req, res) => {
+// functions/test.js
+
+exports.handler = async (event, context) => {
+  const clientIp =
+    event.headers['x-forwarded-for'] || event.requestContext.identity.sourceIp;
+  const userAgent = event.headers['user-agent'];
+
+  console.log(
+    `Request Method: ${event.httpMethod}, Request URL: ${event.path}, Client IP: ${clientIp}, User-Agent: ${userAgent}`
+  );
   console.log('Connected');
-  res.send('Connected');
-});
 
-app.get('/set-relays', (req, res) => {
+  return {
+    statusCode: 200,
+    body: 'Connected',
+  };
+};
+
+// functions/set-relays.js
+
+exports.handler = async (event, context) => {
+  const clientIp =
+    event.headers['x-forwarded-for'] || event.requestContext.identity.sourceIp;
+  const userAgent = event.headers['user-agent'];
+
+  console.log(
+    `Request Method: ${event.httpMethod}, Request URL: ${event.path}, Client IP: ${clientIp}, User-Agent: ${userAgent}`
+  );
+
   const now = new Date();
   const hour = now.getHours();
 
@@ -45,9 +59,8 @@ app.get('/set-relays', (req, res) => {
   };
 
   // Respond with control payload
-  res.json(controlPayload);
-});
-
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
-});
+  return {
+    statusCode: 200,
+    body: JSON.stringify(controlPayload),
+  };
+};
